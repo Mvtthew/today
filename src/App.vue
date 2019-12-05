@@ -1,28 +1,42 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div id="app">
+        <div class="container my-5">
+            <div class="welcome">
+                <h1 class="display-2">
+                    TODAY IS
+                </h1>
+                <p>
+                    and what happened today?
+                </p>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+    export default {
+        name: 'app',
+        data() {
+            return {
+                today: {}
+            }
+        },
+        created() {
+            this.getToday();
+        },
+        methods: {
+            getToday() {
+                fetch('http://history.muffinlabs.com/date', {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*'
+                    }
 
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
-}
+                }).then(res => res.json()).then(data => this.today = data);
+            }
+        }
+    }
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
