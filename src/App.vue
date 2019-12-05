@@ -26,8 +26,16 @@
                 <div class="col-lg-5">
                     <div class="card">
                         <div class="card-header">
-                            <p class="h4 font-weight-light mb-0">
-                                {{ birth.name }} <span class="small">({{birth.bornYear}}<span v-if="birth.died"> - {{ birth.diedYear }}</span>)</span>
+                            <img :src="birth.image" class="img-thumbnail img-fluid">
+
+                            <p class="h4 font-weight-light mb-1">
+                                {{ birth.name }} <span class="small"> ({{ birth.died ? birth.diedYear - birth.bornYear : today.year - birth.bornYear}}) </span>
+                            </p>
+                            <p class="small m-0">
+                                b. {{ birth.bornYear }}
+                            </p>
+                            <p class="small m-0" v-if="birth.died">
+                                d. {{ birth.diedYear }}
                             </p>
                         </div>
                         <div class="card-body">
@@ -63,7 +71,8 @@
                     bornYear: '',
                     died: false,
                     diedYear: '',
-                    year: ''
+                    year: '',
+                    image: ''
                 }
             }
         },
@@ -75,6 +84,8 @@
                 fetch('https://cors-anywhere.herokuapp.com/history.muffinlabs.com/date')
                     .then(res => res.json())
                     .then(data => {
+                        // get image
+
                         // get and save data
                         this.today = data;
                         const now = new Date();
@@ -89,6 +100,8 @@
                         this.birth.name = this.birth.text.substring(0, this.birth.text.indexOf(','));
                         this.birth.bornYear = this.birth.year;
 
+                        this.getBirthImage();
+
                         // check if died
                         if (this.birth.text.indexOf('(d.') > 0) {
                             // died
@@ -102,6 +115,11 @@
                             this.birth.diedYear = '';
                         }
                     });
+            },
+            getBirthImage() {
+                fetch('https://cors-anywhere.herokuapp.com/api.qwant.com/api/search/images?q=' + this.birth.name + '&t=images&count=1&safesearch=1&locale=en_us&uiv=4')
+                    .then(res => res.json())
+                    .then(data => this.$set(this.birth, 'image', data.data.result.items[0].thumbnail));
             }
         }
     }
